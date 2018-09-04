@@ -105,17 +105,17 @@ def handleData2(file):
 	# print(len(states))
 	# quit()
 	for i in range(1,len(data)):
-		cdata[file + data[i][0] + data[0][j]]  =['NR']*37
+		cdata[file[:len(file)-4] + data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
-		cdata[file+data[i][0] + data[0][j]]  =['NR']*37
+		cdata[file[:len(file)-4]+data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
-		cdata[file+data[i][0] + data[0][j]]  =['NR']*37
+		cdata[file[:len(file)-4]+data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
 	# print(state_list)
 	for i in range(1,len(data)):
 		for j in range(1, len(data[i])):
 			idx = state_list.index(convert(states[j-1]))
-			cdata[file+data[i][0]+data[0][j]][idx] = data[i][j]
+			cdata[file[:len(file)-4] +data[i][0]+data[0][j]][idx] = data[i][j]
 
 
 	states = list(set(states))
@@ -161,7 +161,7 @@ def handleData3(file):
 
 	for x in keys[2:]:
 		for y in np.unique(year):
-			cdata[file+x+y] = [np.nan]*37
+			cdata[file[:len(file)-4]+x+y] = [np.nan]*37
 
 	if(file == 'gross-enrolment-ratio-higher-education.csv'):
 		states = data[:,1]
@@ -174,7 +174,7 @@ def handleData3(file):
 	for i in range(0,len(data)):
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[i]))
-			cdata[file+keys[j] + year[i]][idx] = data[i][j]
+			cdata[file[:len(file)-4]+keys[j] + year[i]][idx] = data[i][j]
 
 	states = np.unique(states)
 	for x in cdata:
@@ -202,14 +202,6 @@ def handleData3(file):
 	# 			print(x)
 
 	edudata.update(cdata)
-	# print(states)
-	
-	# to check NR remaining or not
-
-	# for x in cdata:
-	# 	for y in cdata[x]:
-	# 		if(y == 'NR'):
-	# 			print(x,y)
 
 def handleData4(file):
 	# data = read_csv('Education/' + file,delimiter=',')
@@ -220,7 +212,7 @@ def handleData4(file):
 	data = (data.values)
 
 	for x in keys[2:]:
-		cdata[file+x] = [np.nan]*37
+		cdata[file[:len(file)-4]+x] = [np.nan]*37
 
 	states = data[:,1]
 
@@ -234,7 +226,7 @@ def handleData4(file):
 			# 	cdata[file+keys[j]].append(np.nan)
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[i]))
-			cdata[file+keys[j]][idx] = data[i][j]
+			cdata[file[:len(file)-4]+keys[j]][idx] = data[i][j]
 
 
 	for x in cdata:
@@ -288,20 +280,23 @@ filelst2 = [
 filelst3 = [
 'literacy-rate-7-years.csv'
 ]
+def handle_education():
+	global edudata
+	edudata = {}
+	for file in filelst1:
+		handleData2(file)
 
-for file in filelst1:
-	handleData2(file)
-
-for file in filelst2:
-	handleData3(file)
+	for file in filelst2:
+		handleData3(file)
 
 
-for file in filelst3:
-	handleData4(file)
+	for file in filelst3:
+		handleData4(file)
 
-pp.pprint(edudata)
+	return edudata
+# pp.pprint(edudata)
 
-print(len(edudata))
+# print(len(edudata))
 # for x in cdata:
 # 	print(x)
 # 	print(cdata[x])

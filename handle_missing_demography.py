@@ -97,10 +97,12 @@ def handleData(file):
 	edudata.update(cdata)
 
 
-
-filelst = ['child-sex-ratio-0-6-years.csv',
- 'decadal-growth-rate.csv', 
- 'sex-ratio.csv']
-for file in filelst:
-	handleData(file)
-pp.pprint(len(edudata))
+def handle_demography():
+	global edudata
+	edudata = {}
+	filelst = ['child-sex-ratio-0-6-years.csv',
+	 'decadal-growth-rate.csv', 
+	 'sex-ratio.csv']
+	for file in filelst:
+		handleData(file)
+	return edudata

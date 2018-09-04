@@ -73,51 +73,51 @@ edudata = {}
 
 #made cdata as completee daa append all in this
 
-def handleData(file):
-	data = read_csv('Economy/' + file,delimiter=',')
+# def handleData(file):
+# 	data = read_csv('Economy/' + file,delimiter=',')
 
-	check = {}
-	size_item = len(data[data.keys()[0]])
-	for [x,y] in sortedlist[1:]:
-		y = alter(y)
-		sum_dic[y] = [0]*size_item
-		count[y] = [0]*size_item
+# 	check = {}
+# 	size_item = len(data[data.keys()[0]])
+# 	for [x,y] in sortedlist[1:]:
+# 		y = alter(y)
+# 		sum_dic[y] = [0]*size_item
+# 		count[y] = [0]*size_item
 		
-	for x in cdata:
-		check[x] = 0
+# 	for x in cdata:
+# 		check[x] = 0
 
-	for x in data:
-		y = alter(x)
-		data[y] = data.pop(x)
-
-
-
-	for x in data:
-		y = convert(x)
-		if(y in state_dic):
-			sum_dic[state_dic[y]] = sum_dic[state_dic[y]] + np.where(np.isnan(data[x]),0,data[x])
-			count[state_dic[y]] = count[state_dic[y]] + (np.isnan(data[x]) == False)
-
-	for x in sum_dic:
-		count[x] = np.where(count[x] == 0,1,count[x])
-		sum_dic[x] = sum_dic[x] / count[x]
+# 	for x in data:
+# 		y = alter(x)
+# 		data[y] = data.pop(x)
 
 
-	for x in data:
-		y = convert(x)
-		if(y in state_dic):
-			data[x] = np.where(np.isnan(data[x]),sum_dic[state_dic[y]], data[x])
 
-	for x in data:
-		if convert(x) in cdata:
-			check[convert(x)] = 1
-			cdata[convert(x)].extend(list(data[x]))
+# 	for x in data:
+# 		y = convert(x)
+# 		if(y in state_dic):
+# 			sum_dic[state_dic[y]] = sum_dic[state_dic[y]] + np.where(np.isnan(data[x]),0,data[x])
+# 			count[state_dic[y]] = count[state_dic[y]] + (np.isnan(data[x]) == False)
 
-	for y in check:
-		if(check[y] == 0):
-			cdata[y].extend(sum_dic[state_dic[y]])
+# 	for x in sum_dic:
+# 		count[x] = np.where(count[x] == 0,1,count[x])
+# 		sum_dic[x] = sum_dic[x] / count[x]
 
-	headers.extend(data[data.keys()[0]])
+
+# 	for x in data:
+# 		y = convert(x)
+# 		if(y in state_dic):
+# 			data[x] = np.where(np.isnan(data[x]),sum_dic[state_dic[y]], data[x])
+
+# 	for x in data:
+# 		if convert(x) in cdata:
+# 			check[convert(x)] = 1
+# 			cdata[convert(x)].extend(list(data[x]))
+
+# 	for y in check:
+# 		if(check[y] == 0):
+# 			cdata[y].extend(sum_dic[state_dic[y]])
+
+# 	headers.extend(data[data.keys()[0]])
 
 def handleData2(file):
 	# data = read_csv('Education/' + file,delimiter=',')
@@ -174,6 +174,9 @@ filelst = ['gross-domestic-product-gdp-constant-price.csv',
  'gross-domestic-product-gdp-current-price.csv', 
  'state-wise-net-domestic-product-ndp-constant-price.csv', 
  'state-wise-net-domestic-product-ndp-current-price.csv']
-for file in filelst:
-	handleData2(file)
-pp.pprint(len(edudata))
+def handle_economy():
+	global edudata
+	edudata = {}
+	for file in filelst:
+		handleData2(file)
+	return edudata
