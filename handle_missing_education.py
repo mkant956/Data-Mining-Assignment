@@ -76,6 +76,8 @@ for x in state_dic:
 # print(state_dic)
 state_dic['allindia'] = None
 
+state_list = state_dic.keys()
+
 # intialising complete data
 headers = []
 edudata = {}
@@ -153,56 +155,41 @@ def handleData2(file):
 	# print(len(states))
 	# quit()
 	for i in range(1,len(data)):
-		cdata[file + data[i][0] + data[0][j]]  =[]
-		# print(file +data[i][0] + data[0][j])
+		cdata[file + data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
-		cdata[file+data[i][0] + data[0][j]]  =[]
-		# print(file +data[i][0] + data[0][j])
+		cdata[file+data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
-		cdata[file+data[i][0] + data[0][j]]  =[]
-		# print(file +data[i][0] + data[0][j])
+		cdata[file+data[i][0] + data[0][j]]  =['NR']*37
 		j+=1
-	# pp.pprint(cdata)
-	# print(len(data[0]))
-
-	# for i in range(1,len(data)):
-	# 	if
-
+	# print(state_list)
 	for i in range(1,len(data)):
 		for j in range(1, len(data[i])):
-			if(states[j-1] == 'telangana'):
-				if(data[0][j] == '2013-14' and file == 'drop-out-rate.csv'):
-					cdata[file+data[i][0]+data[0][j-3]].append('NR')
-				elif(data[0][j] == '2014-15' and file != 'drop-out-rate.csv'):
-					cdata[file+data[i][0]+data[0][j-3]].append('NR')
-				
+			idx = state_list.index(convert(states[j-1]))
+			cdata[file+data[i][0]+data[0][j]][idx] = data[i][j]
 
-			cdata[file + data[i][0]+data[0][j]].append(data[i][j])
 
-	# pp.pprint(cdata)
 	states = list(set(states))
 	for x in cdata:
 		# print(len(cdata[x]))
 		for y in range(0,len(cdata[x])):
-			if(cdata[x][y] == 'NR'):
-				# print(states[y], state_dic[convert(states[y])])
+			if(notvalid(cdata[x][y])):
 				avg = 0
-				region = state_dic[convert(states[y])]
+				region = state_dic[convert(state_list[y])]
 				c = 0
 				if(region == None):
 					for z in range(0,len(cdata[x])):
-						if(cdata[x][z] <> 'NR' ):
+						if(not notvalid(cdata[x][z] ) ):
 							avg += float(cdata[x][z])
 							c+=1	
 				else:				
 					for z in range(0,len(cdata[x])):
-						if(state_dic[convert(states[z])] == region and cdata[x][z] <> 'NR' ):
+						if(state_dic[convert(state_list[z])] == region and not notvalid(cdata[x][z]) ):
 							avg += float(cdata[x][z])
 							c+=1
 				cdata[x][y] = float(avg)/(1 if c == 0 else c)
 	
 	edudata.update(cdata)
-	print(states)
+	# print(states)
 	# to check NR remaining or not
 
 	# for x in cdata:
@@ -224,30 +211,27 @@ def handleData3(file):
 
 	for x in keys[2:]:
 		for y in np.unique(year):
-			cdata[file+x+y] = []
+			cdata[file+x+y] = [np.nan]*37
 
-	# print(keys)
-	# print(year)
 	if(file == 'gross-enrolment-ratio-higher-education.csv'):
 		states = data[:,1]
 	else:
 		states = data[:,0]
 
-	for i in range(0,len(data)):
-		if(alter(states[i]) == 'tripura' and (year[i] in ['2010-11','2011-12'])):
-			for j in range(2,len(data[i])):
-				cdata[file+keys[j]+year[i]].append(np.nan)
-		for j in range(2,len(data[i])):
-			cdata[file+keys[j] + year[i]].append(data[i][j])
-
-	for i in range(0, len(states)):
+	for i in range(0,len(states)):
 		states[i] = alter(states[i])
+
+	for i in range(0,len(data)):
+		for j in range(2,len(data[i])):
+			idx = state_list.index(convert(states[i]))
+			cdata[file+keys[j] + year[i]][idx] = data[i][j]
+
 	states = np.unique(states)
 	for x in cdata:
 		for y in range(0,len(cdata[x])):
 			if(notvalid(cdata[x][y])):
 				avg = 0
-				region = state_dic[convert(states[y])]
+				region = state_dic[convert(state_list[y])]
 				c = 0
 				if(region == None):
 					for z in range(0,len(cdata[x])):
@@ -256,7 +240,7 @@ def handleData3(file):
 							c+=1	
 				else:				
 					for z in range(0,len(cdata[x])):
-						if(state_dic[convert(states[z])] == region and not notvalid(cdata[x][z]) ):
+						if(state_dic[convert(state_list[z])] == region and not notvalid(cdata[x][z]) ):
 							avg += float(cdata[x][z])
 							c+=1
 				cdata[x][y] = float(avg)/(1 if c == 0 else c)
@@ -268,7 +252,7 @@ def handleData3(file):
 	# 			print(x)
 
 	edudata.update(cdata)
-	print(states)
+	# print(states)
 	
 	# to check NR remaining or not
 
@@ -286,7 +270,7 @@ def handleData4(file):
 	data = (data.values)
 
 	for x in keys[2:]:
-		cdata[file+x] = []
+		cdata[file+x] = [np.nan]*37
 
 	states = data[:,1]
 
@@ -294,19 +278,20 @@ def handleData4(file):
 		states[i] = alter(states[i])
 	states = np.array(np.unique(states))
 	for i in range(0,len(data)):
-		if(alter(states[i]) == 'tripura' and 'telangana' not in states):
-			states = np.insert(states, i, 'telangana')
-			for j in range(2,len(data[i])):
-				cdata[file+keys[j]].append(np.nan)
+		# if(alter(states[i]) == 'tripura' and 'telangana' not in states):
+			# states = np.insert(states, i, 'telangana')
+			# for j in range(2,len(data[i])):
+			# 	cdata[file+keys[j]].append(np.nan)
 		for j in range(2,len(data[i])):
-			cdata[file+keys[j]].append(data[i][j])
+			idx = state_list.index(convert(states[i]))
+			cdata[file+keys[j]][idx] = data[i][j]
 
 
 	for x in cdata:
 		for y in range(0,len(cdata[x])):
 			if(notvalid(cdata[x][y])):
 				avg = 0
-				region = state_dic[convert(states[y])]
+				region = state_dic[convert(state_list[y])]
 				c = 0
 				if(region == None):
 					for z in range(0,len(cdata[x])):
@@ -315,7 +300,7 @@ def handleData4(file):
 							c+=1	
 				else:				
 					for z in range(0,len(cdata[x])):
-						if(state_dic[convert(states[z])] == region and not notvalid(cdata[x][z]) ):
+						if(state_dic[convert(state_list[z])] == region and not notvalid(cdata[x][z]) ):
 							avg += float(cdata[x][z])
 							c+=1
 				cdata[x][y] = float(avg)/(1 if c == 0 else c)
@@ -328,7 +313,7 @@ def handleData4(file):
 	# 			print(x)
 
 	edudata.update(cdata)
-	print(states)	
+	# print(states)	
 	# to check NR remaining or not
 
 	# for x in cdata:
@@ -357,12 +342,12 @@ filelst3 = [
 for file in filelst1:
 	handleData2(file)
 
-# for file in filelst2:
-# 	handleData3(file)
+for file in filelst2:
+	handleData3(file)
 
 
-# for file in filelst3:
-# 	handleData4(file)
+for file in filelst3:
+	handleData4(file)
 
 # pp.pprint(edudata)
 
