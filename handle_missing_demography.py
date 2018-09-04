@@ -90,9 +90,27 @@ def handleData(file):
 	for i in range(0,len(data)):
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[i]))
-			cdata[file[:len(file)-4] + keys[j] ][idx] = data[i][j]
+			cdata[file[:len(file)-4] + keys[j] ][idx] = float(data[i][j])
 	
 	# pp.pprint(cdata)
+
+	for x in cdata:
+		for y in range(0,len(cdata[x])):
+			if(notvalid(cdata[x][y])):
+				avg = 0
+				region = state_dic[convert(state_list[y])]
+				c = 0
+				if(region == None):
+					for z in range(0,len(cdata[x])):
+						if(not notvalid(cdata[x][z] ) ):
+							avg += float(cdata[x][z])
+							c+=1	
+				else:				
+					for z in range(0,len(cdata[x])):
+						if(state_dic[convert(state_list[z])] == region and not notvalid(cdata[x][z]) ):
+							avg += float(cdata[x][z])
+							c+=1
+				cdata[x][y] = float(avg)/(1 if c == 0 else c)
 
 	edudata.update(cdata)
 

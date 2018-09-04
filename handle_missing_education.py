@@ -36,6 +36,12 @@ def convert(x):
 	else:
 		return x
 
+def tofloat(x):
+	try:
+		return float(x)
+	except Exception as e:
+		return x
+
 def notvalid(x):
 	try:
 		x = float(x)
@@ -115,7 +121,7 @@ def handleData2(file):
 	for i in range(1,len(data)):
 		for j in range(1, len(data[i])):
 			idx = state_list.index(convert(states[j-1]))
-			cdata[file[:len(file)-4] +data[i][0]+data[0][j]][idx] = data[i][j]
+			cdata[file[:len(file)-4] +data[i][0]+data[0][j]][idx] = tofloat(data[i][j])
 
 
 	states = list(set(states))
@@ -174,7 +180,7 @@ def handleData3(file):
 	for i in range(0,len(data)):
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[i]))
-			cdata[file[:len(file)-4]+keys[j] + year[i]][idx] = data[i][j]
+			cdata[file[:len(file)-4]+keys[j] + year[i]][idx] = tofloat(data[i][j])
 
 	states = np.unique(states)
 	for x in cdata:
@@ -226,7 +232,7 @@ def handleData4(file):
 			# 	cdata[file+keys[j]].append(np.nan)
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[i]))
-			cdata[file[:len(file)-4]+keys[j]][idx] = data[i][j]
+			cdata[file[:len(file)-4]+keys[j]][idx] = tofloat(data[i][j])
 
 
 	for x in cdata:
