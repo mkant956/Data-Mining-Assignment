@@ -23,6 +23,8 @@ def convert(x):
 		return "nctofdelhi"
 	elif(x == "dadra&nagarhaveli"):
 		return "d&nhaveli"
+	elif(x == "jammuandkashmir"):
+		return "jammu&kashmir"
 	else:
 		return x
 
@@ -58,9 +60,9 @@ state_dic['allindia'] = None
 
 # intialising complete data
 headers = []
-cdata = {}
-for x in state_dic:
-	cdata[x] = []
+edudata = {}
+# for x in state_dic:
+# 	edudata[x] = []
 
 #made cdata as completee daa append all in this
 
@@ -133,11 +135,14 @@ def handleData2(file):
 	# print(len(states))
 	# quit()
 	for i in range(1,len(data)):
-		cdata[data[i][0] + data[0][j]]  =[]
+		cdata[file + data[i][0] + data[0][j]]  =[]
+		# print(file +data[i][0] + data[0][j])
 		j+=1
-		cdata[data[i][0] + data[0][j]]  =[]
+		cdata[file+data[i][0] + data[0][j]]  =[]
+		# print(file +data[i][0] + data[0][j])
 		j+=1
-		cdata[data[i][0] + data[0][j]]  =[]
+		cdata[file+data[i][0] + data[0][j]]  =[]
+		# print(file +data[i][0] + data[0][j])
 		j+=1
 	# pp.pprint(cdata)
 	# print(len(data[0]))
@@ -148,11 +153,14 @@ def handleData2(file):
 	for i in range(1,len(data)):
 		# print(states[i])
 		for j in range(1, len(data[i])):
-			if(states[j-1] == 'telangana' and data[0][j] == '2013-14'):
-				# print(data[i][0]+data[0][j-3])
-				cdata[data[i][0]+data[0][j-3]].append('NR')
+			if(states[j-1] == 'telangana'):
+				if(data[0][j] == '2013-14' and file == 'drop-out-rate.csv'):
+					cdata[file+data[i][0]+data[0][j-3]].append('NR')
+				elif(data[0][j] == '2014-15' and file != 'drop-out-rate.csv'):
+					cdata[file+data[i][0]+data[0][j-3]].append('NR')
+				
 
-			cdata[data[i][0]+data[0][j]].append(data[i][j])
+			cdata[file + data[i][0]+data[0][j]].append(data[i][j])
 
 	# pp.pprint(cdata)
 	states = list(set(states))
@@ -175,7 +183,10 @@ def handleData2(file):
 							avg += float(cdata[x][z])
 							c+=1
 				cdata[x][y] = float(avg)/(1 if c == 0 else c)
-	pp.pprint(cdata)
+	
+	edudata.update(cdata)
+	# for x in edudata:
+	# 	print(len(cdata[x]))
 	
 	# to check NR remaining or not
 
@@ -184,7 +195,7 @@ def handleData2(file):
 	# 		if(y == 'NR'):
 	# 			print(x,y)
 
-filelst = ['gross-enrolment-ratio-higher-education.csv','drop-out-rate.csv']
+# filelst = ['drop-out-rate.csv']
 # filelst = [
 # 'drop-out-rate.csv',
 # 'gross-enrolment-ratio-higher-education.csv',
@@ -196,6 +207,14 @@ filelst = ['gross-enrolment-ratio-higher-education.csv','drop-out-rate.csv']
 # 'percentage-schools-electricity.csv',
 # 'percentage-schools-girls-toilet.csv'
 # ]
+filelst = [
+'drop-out-rate.csv',
+'percentage-schools-boys-toilet.csv',
+'percentage-schools-computers.csv',
+'percentage-schools-drinking-water.csv',
+'percentage-schools-electricity.csv',
+'percentage-schools-girls-toilet.csv'
+]
 
 
 for file in filelst:
@@ -203,7 +222,8 @@ for file in filelst:
 
 
 
-# pp.pprint(cdata)
+pp.pprint(edudata)
+print(len(edudata))
 # for x in cdata:
 # 	print(x)
 # 	print(cdata[x])
