@@ -25,8 +25,26 @@ def convert(x):
 		return "d&nhaveli"
 	elif(x == "jammuandkashmir"):
 		return "jammu&kashmir"
+	elif(x == "chhatisgarh"):
+		return "chhattisgarh"
+	elif(x == "uttrakhand" or x == "uttaranchal"):
+		return "uttarakhand"
+	elif(x == "pondicherry"):
+		return "puducherry"
+	elif(x == "india"):
+		return "allindia"
 	else:
 		return x
+
+def notvalid(x):
+	try:
+		x = float(x)
+		if(np.isnan(x)):
+			return 1
+		else:
+			return 0
+	except Exception as e:
+		return 1
 
 # region = read_csv('regions.csv',delimiter = ',')
 with open('regions.csv') as csv_file:
@@ -151,7 +169,6 @@ def handleData2(file):
 	# 	if
 
 	for i in range(1,len(data)):
-		# print(states[i])
 		for j in range(1, len(data[i])):
 			if(states[j-1] == 'telangana'):
 				if(data[0][j] == '2013-14' and file == 'drop-out-rate.csv'):
@@ -185,8 +202,73 @@ def handleData2(file):
 				cdata[x][y] = float(avg)/(1 if c == 0 else c)
 	
 	edudata.update(cdata)
-	# for x in edudata:
-	# 	print(len(cdata[x]))
+	print(states)
+	# to check NR remaining or not
+
+	# for x in cdata:
+	# 	for y in cdata[x]:
+	# 		if(y == 'NR'):
+	# 			print(x,y)
+
+def handleData3(file):
+	# data = read_csv('Education/' + file,delimiter=',')
+	data = pd.read_csv('Education/' + file, header=0)
+	cdata = {}
+
+	keys = data.keys()
+	data = (data.values)
+	if(file == 'gross-enrolment-ratio-higher-education.csv'):
+		year = np.array(data[:,0].T)
+	else:
+		year = np.array(data[:,1].T)
+
+	for x in keys[2:]:
+		for y in np.unique(year):
+			cdata[file+x+y] = []
+
+	# print(keys)
+	# print(year)
+	if(file == 'gross-enrolment-ratio-higher-education.csv'):
+		states = data[:,1]
+	else:
+		states = data[:,0]
+
+	for i in range(0,len(data)):
+		if(alter(states[i]) == 'tripura' and (year[i] in ['2010-11','2011-12'])):
+			for j in range(2,len(data[i])):
+				cdata[file+keys[j]+year[i]].append(np.nan)
+		for j in range(2,len(data[i])):
+			cdata[file+keys[j] + year[i]].append(data[i][j])
+
+	for i in range(0, len(states)):
+		states[i] = alter(states[i])
+	states = np.unique(states)
+	for x in cdata:
+		for y in range(0,len(cdata[x])):
+			if(notvalid(cdata[x][y])):
+				avg = 0
+				region = state_dic[convert(states[y])]
+				c = 0
+				if(region == None):
+					for z in range(0,len(cdata[x])):
+						if(not notvalid(cdata[x][z])):
+							avg += float(cdata[x][z])
+							c+=1	
+				else:				
+					for z in range(0,len(cdata[x])):
+						if(state_dic[convert(states[z])] == region and not notvalid(cdata[x][z]) ):
+							avg += float(cdata[x][z])
+							c+=1
+				cdata[x][y] = float(avg)/(1 if c == 0 else c)
+	
+	# pp.pprint(cdata)
+	# for x in cdata:
+	# 	for y in cdata[x]:
+	# 		if(np.isnan(y)):
+	# 			print(x)
+
+	edudata.update(cdata)
+	print(states)
 	
 	# to check NR remaining or not
 
@@ -195,19 +277,67 @@ def handleData2(file):
 	# 		if(y == 'NR'):
 	# 			print(x,y)
 
-# filelst = ['drop-out-rate.csv']
-# filelst = [
-# 'drop-out-rate.csv',
-# 'gross-enrolment-ratio-higher-education.csv',
-# 'gross-enrolment-ratio-schools.csv',
-# 'literacy-rate-7-years.csv',
-# 'percentage-schools-boys-toilet.csv',
-# 'percentage-schools-computers.csv',
-# 'percentage-schools-drinking-water.csv',
-# 'percentage-schools-electricity.csv',
-# 'percentage-schools-girls-toilet.csv'
-# ]
-filelst = [
+def handleData4(file):
+	# data = read_csv('Education/' + file,delimiter=',')
+	data = pd.read_csv('Education/' + file, header=0)
+	cdata = {}
+
+	keys = data.keys()
+	data = (data.values)
+
+	for x in keys[2:]:
+		cdata[file+x] = []
+
+	states = data[:,1]
+
+	for i in range(0, len(states)):
+		states[i] = alter(states[i])
+	states = np.array(np.unique(states))
+	for i in range(0,len(data)):
+		if(alter(states[i]) == 'tripura' and 'telangana' not in states):
+			states = np.insert(states, i, 'telangana')
+			for j in range(2,len(data[i])):
+				cdata[file+keys[j]].append(np.nan)
+		for j in range(2,len(data[i])):
+			cdata[file+keys[j]].append(data[i][j])
+
+
+	for x in cdata:
+		for y in range(0,len(cdata[x])):
+			if(notvalid(cdata[x][y])):
+				avg = 0
+				region = state_dic[convert(states[y])]
+				c = 0
+				if(region == None):
+					for z in range(0,len(cdata[x])):
+						if(not notvalid(cdata[x][z])):
+							avg += float(cdata[x][z])
+							c+=1	
+				else:				
+					for z in range(0,len(cdata[x])):
+						if(state_dic[convert(states[z])] == region and not notvalid(cdata[x][z]) ):
+							avg += float(cdata[x][z])
+							c+=1
+				cdata[x][y] = float(avg)/(1 if c == 0 else c)
+	
+	# pp.pprint(cdata)
+	# pp.pprint(cdata)
+	# for x in cdata:
+	# 	for y in cdata[x]:
+	# 		if(np.isnan(y)):
+	# 			print(x)
+
+	edudata.update(cdata)
+	print(states)	
+	# to check NR remaining or not
+
+	# for x in cdata:
+	# 	for y in cdata[x]:
+	# 		if(y == 'NR'):
+	# 			print(x,y)
+
+
+filelst1 = [
 'drop-out-rate.csv',
 'percentage-schools-boys-toilet.csv',
 'percentage-schools-computers.csv',
@@ -215,14 +345,27 @@ filelst = [
 'percentage-schools-electricity.csv',
 'percentage-schools-girls-toilet.csv'
 ]
+filelst2 = [
+'gross-enrolment-ratio-higher-education.csv',
+'gross-enrolment-ratio-schools.csv'
+]
 
+filelst3 = [
+'literacy-rate-7-years.csv'
+]
 
-for file in filelst:
+for file in filelst1:
 	handleData2(file)
 
+# for file in filelst2:
+# 	handleData3(file)
 
 
-pp.pprint(edudata)
+# for file in filelst3:
+# 	handleData4(file)
+
+# pp.pprint(edudata)
+
 print(len(edudata))
 # for x in cdata:
 # 	print(x)
