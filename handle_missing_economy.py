@@ -131,16 +131,19 @@ def handleData2(file):
 			float(data[i,0])
 		except Exception as e:
 			cdata[file[:len(file)-4] + data[i,0] + data[i,1]] = [np.nan]*37
-
+	if(type(data[len(data)-1][0]) <> str):
+		data = data[:len(data)-1]
 	states = list(keys)
 	for i in range(0, len(states)):
 		states[i] = alter(states[i])
-
-
-	for i in range(0,len(data)-1):
+		
+	for i in range(0,len(data)):
 		for j in range(2,len(data[i])):
 			idx = state_list.index(convert(states[j]))
 			cdata[file[:len(file)-4] +data[i,0] + data[i,1]][idx] = data[i][j]
+
+	# print(cdata["gross-domestic-product-gdp-current-price(% Growth over previous year)2016-17"])
+	# pp.pprint(cdata)
 
 	for x in cdata:
 		for y in range(0,len(cdata[x])):
@@ -158,7 +161,13 @@ def handleData2(file):
 						if(state_dic[convert(state_list[z])] == region and not notvalid(cdata[x][z]) ):
 							avg += float(cdata[x][z])
 							c+=1
-				cdata[x][y] = float(avg)/(1 if c == 0 else c)
+				if(c == 0):
+					for z in range(0,len(cdata[x])):
+						if(not notvalid(cdata[x][z])):
+							avg += float(cdata[x][z])
+							c+=1
+				cdata[x][y] = float(avg)/c
+				# cdata[x][y] = float(avg)/(1 if c == 0 else c)
 	
 	# pp.pprint(cdata)
 	# for x in cdata:
